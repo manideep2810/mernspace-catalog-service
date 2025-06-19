@@ -12,7 +12,7 @@ export default [
     body("priceConfiguration.*.priceType")
         .exists()
         .withMessage("Price type is required")
-        .custom((value: "base" | "aditional") => {
+        .custom((value: "base" | "additional") => {
             const validKeys = ["base", "additional"];
             if (!validKeys.includes(value)) {
                 throw new Error(
@@ -21,6 +21,7 @@ export default [
                     )}]`,
                 );
             }
+            return true;
         }),
     body("attributes").exists().withMessage("Attributes field is required"),
 ];
