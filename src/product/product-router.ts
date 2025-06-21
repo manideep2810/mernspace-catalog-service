@@ -5,15 +5,19 @@ import { canAccess } from "../common/middlewares/canAccess";
 import { ROLES } from "../common/types";
 import { ProductController } from "./product-controller";
 import createProductValidator from "./create-product-validator";
+import { ProductService } from "./product-service";
+import fileUpload from "express-fileupload";
 
 const router = Router();
 
-const productController = new ProductController();
+const productService = new ProductService();
+const productController = new ProductController(productService);
 
 router.post(
     "/",
     authenticate,
     canAccess([ROLES.ADMIN, ROLES.MANAGER]),
+    fileUpload(),
     createProductValidator,
     asyncWrapper(productController.create),
 );

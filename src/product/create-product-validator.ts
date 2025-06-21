@@ -13,10 +13,10 @@ export default [
     body("attributes").exists().withMessage("Attributes field is required"),
     body("tenantId").exists().withMessage("tenant Id field is required"),
     body("categoryId").exists().withMessage("Category Id field is required"),
-    body("image").custom((value, { req }) => {
-        if (!req.files) {
-            throw new Error("Product Image is Required");
-        }
-        return true;
-    }),
+    // body("image").custom((value, { req }) => {
+    //     if (!req.files) {
+    //         throw new Error("Product Image is Required");
+    //     }
+    //     return true;
+    // }),
 ];
