@@ -46,12 +46,64 @@ export class ProductController {
             categoryId,
             tenantId,
             isPublish,
-            image: "image.jpeg",
+            image: imageName,
         };
 
         const newProduct = await this.productService.createProduct(
             product as unknown as Product,
         );
         res.json({ id: newProduct._id });
+    };
+
+    update = async (req: Request, res: Response, next: NextFunction) => {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return next(createHttpError(400, result.array()[0].msg as string));
+        }
+
+        const { productId } = req.params;
+        let imageName: string | undefined;
+        let oldImage: string | undefined;
+
+        if (req.files?.image) {
+            oldImage = await this.productService.getProductImage(productId);
+
+            const image = req.files?.image as UploadedFile;
+            imageName = `${uuidv4()}.jpeg`;
+
+            await this.storage.upload({
+                filename: imageName,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                fileData: image.data.buffer,
+            });
+
+            await this.storage.delete(oldImage);
+        }
+
+        const {
+            name,
+            description,
+            priceConfiguration,
+            categoryId,
+            tenantId,
+            attributes,
+            isPublish,
+        } = req.body as Product;
+
+        const product = {
+            name,
+            description,
+            priceConfiguration: JSON.parse(priceConfiguration),
+            attributes: JSON.parse(attributes),
+            categoryId,
+            tenantId,
+            isPublish,
+            image: imageName ? imageName : (oldImage as string),
+        };
+
+        await this.productService.updateProduct(productId, product);
+
+        res.json({ id: productId });
     };
 }
