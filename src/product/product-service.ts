@@ -25,4 +25,9 @@ export class ProductService {
         }
         return updatedProduct;
     }
+
+    async getProduct(productId: string) {
+        const product = await productModel.findById(productId);
+        return product;
+    }
 }

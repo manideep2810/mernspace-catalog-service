@@ -7,6 +7,7 @@ import { ProductService } from "./product-service";
 import { Product } from "./product-types";
 import { FileStorage } from "../common/types/storage";
 import { UploadedFile } from "express-fileupload";
+import { AuthRequest } from "../common/types";
 
 export class ProductController {
     constructor(
@@ -62,6 +63,25 @@ export class ProductController {
         }
 
         const { productId } = req.params;
+
+        if ((req as AuthRequest).auth.role !== "admin") {
+            const Iproduct = await this.productService.getProduct(productId);
+
+            if (!Iproduct) {
+                return next(createHttpError(404, "Product not found"));
+            }
+
+            const tenant = (req as AuthRequest).auth.tenantId;
+            if (Iproduct.tenantId !== String(tenant)) {
+                return next(
+                    createHttpError(
+                        403,
+                        "You are not allowed to update this product",
+                    ),
+                );
+            }
+        }
+
         let imageName: string | undefined;
         let oldImage: string | undefined;
 
