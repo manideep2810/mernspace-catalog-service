@@ -8,3 +8,9 @@ export interface Topping {
     image: string;
     isPublish: boolean;
 }
+
+export interface CreataeRequestBody {
+    name: string;
+    price: number;
+    tenantId: string;
+}
