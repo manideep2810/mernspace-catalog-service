@@ -1,3 +1,4 @@
+import createHttpError from "http-errors";
 import { FileStorage } from "../common/types/storage";
 import productModel from "./product-model";
 import { Filter, Product } from "./product-types";
@@ -77,5 +78,15 @@ export class ProductService {
         });
 
         return updatedProducts;
+    }
+
+    async deleteProduct(productId: string) {
+        const product = await productModel.findById(productId);
+        if (!product) {
+            const err = createHttpError(400, "Product Not Found");
+            throw err;
+        }
+        await this.storage.delete(product.image);
+        return await productModel.findByIdAndDelete(productId);
     }
 }

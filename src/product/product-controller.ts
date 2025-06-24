@@ -159,4 +159,22 @@ export class ProductController {
 
         res.json(products);
     };
+
+    getOne = async (req: Request, res: Response) => {
+        const { productId } = req.params;
+
+        const product = await this.productService.getProduct(productId);
+        if (!product) {
+            const err = createHttpError("400,Product Not Found");
+            throw err;
+        }
+        product.image = this.storage.getObjectURI(product.image);
+        res.json(product);
+    };
+
+    remove = async (req: Request, res: Response) => {
+        const { productId } = req.params;
+        await this.productService.deleteProduct(productId);
+        res.json({});
+    };
 }
