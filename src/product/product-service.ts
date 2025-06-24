@@ -1,7 +1,9 @@
+import { FileStorage } from "../common/types/storage";
 import productModel from "./product-model";
 import { Filter, Product } from "./product-types";
 
 export class ProductService {
+    constructor(private storage: FileStorage) {}
     async createProduct(product: Product) {
         return await productModel.create(product);
     }
@@ -66,7 +68,14 @@ export class ProductService {
             },
         ]);
 
-        const result = await aggregate.exec();
-        return result as Product[];
+        const result = (await aggregate.exec()) as Product[];
+        const updatedProducts = result.map((product: Product) => {
+            return {
+                ...product,
+                image: this.storage.getObjectURI(product.image),
+            };
+        });
+
+        return updatedProducts;
     }
 }

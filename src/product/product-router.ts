@@ -13,8 +13,8 @@ import updateProductValidator from "./update-product-validator";
 
 const router = Router();
 
-const productService = new ProductService();
 const storage = new S3Storage();
+const productService = new ProductService(storage);
 const productController = new ProductController(productService, storage);
 
 router.post(

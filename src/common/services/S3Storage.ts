@@ -40,7 +40,13 @@ export class S3Storage implements FileStorage {
         // @ts-ignore
         return await this.client.send(new DeleteObjectCommand(objectParams));
     }
-    getObjectURI(): string {
-        throw new Error("Method not implemented.");
+
+    getObjectURI(filename: string): string {
+        const bucket = config.get("s3.Bucket");
+        const region = config.get("s3.Region");
+        if (typeof bucket === "string" && typeof region === "string") {
+            return `https://${bucket}.s3.${region}.amazonaws.com/${filename}`;
+        }
+        throw new Error("Invalid S3 Configuration");
     }
 }

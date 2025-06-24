@@ -99,7 +99,9 @@ export class ProductController {
                 fileData: image.data.buffer,
             });
 
-            await this.storage.delete(oldImage);
+            if (oldImage) {
+                await this.storage.delete(oldImage);
+            }
         }
 
         const {
